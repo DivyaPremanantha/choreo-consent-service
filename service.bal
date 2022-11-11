@@ -4,14 +4,24 @@ import ballerina/http;
 # bound to port `9090`.
 service / on new http:Listener(9090) {
 
-    # A resource for generating greetings
-    # + name - the input string name
-    # + return - string name with hello message or error
-    resource function get greeting(string name) returns string|error {
+    # A resource for generating consent
+    # + return - consent response
+    resource function post accountAccessConsent() returns string|error {
         // Send a response back to the caller.
-        if name is "" {
-            return error("name should not be empty!");
-        }
-        return "Hello, " + name;
+        return "Account Consent POST Service Invoked";
+    }
+
+    # A resource to return consent
+    # + return - consent response
+    resource function get accountAccessConsent() returns string|error {
+        // Send a response back to the caller.
+        return "Account Consent GET Service Invoked";
+    }
+
+        # A resource to return consent
+    # + return - consent response
+    resource function get accounts() returns string|error {
+        // Send a response back to the caller.
+        return "Account Service Invoked";
     }
 }
