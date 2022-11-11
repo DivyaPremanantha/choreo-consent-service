@@ -224,6 +224,17 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
+name = "random"
+version = "1.3.0"
+dependencies = [
+	{org = "ballerina", name = "time"}
+]
+modules = [
+	{org = "ballerina", packageName = "random", moduleName = "random"}
+]
+
+[[package]]
+org = "ballerina"
 name = "regex"
 version = "1.3.0"
 dependencies = [
@@ -274,6 +285,7 @@ name = "consentservice"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "http"},
+	{org = "ballerina", name = "random"},
 	{org = "ballerinai", name = "observe"}
 ]
 modules = [
