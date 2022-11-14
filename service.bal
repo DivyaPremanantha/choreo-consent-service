@@ -14,6 +14,7 @@ service / on new http:Listener(9090) {
         io:println(consentResource.Data.Permissions);
         if (consentResource.Data.Permissions == ["ReadAccountsBasic", "ReadTransactionBasic"]) {
             json mapJson = {"consentID": consentID};
+            io:println(mapJson);
             return consentResource.mergeJson(mapJson);
         }
         return error("Invalid permissions");
