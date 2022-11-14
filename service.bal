@@ -11,15 +11,12 @@ service / on new http:Listener(9090) {
     resource function post createAccountConsent(@http:Payload json consentResource) returns string|error {
         // Send a response back to the caller.
         int consentID = check random:createIntInRange(1, 10000);
-        io:println(consentResource.Permissions);
-        if (consentResource.Permissions == ["ReadAccountsBasic", "ReadTransactionBasic"]) {
+        io:println(consentResource.Data.Permissions);
+        if (consentResource.Data.Permissions == ["ReadAccountsBasic", "ReadTransactionBasic"]) {
             json j1 = {"consentID": consentID};
             json|error j2 = consentResource.mergeJson(j1);
             return j2.ensureType(string);
         }
-
-        json j1 = {"consentID": consentID};
-        json|error j2 = consentResource.mergeJson(j1);
-        return j2.ensureType(string);
+        return error("Invalid permissions");
     }
 }
