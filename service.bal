@@ -15,6 +15,7 @@ service / on new http:Listener(9090) {
         if (consentResource.Data.Permissions == ["ReadAccountsBasic", "ReadTransactionBasic"]) {
             json j1 = {"consentID": consentID};
             json|error j2 = consentResource.mergeJson(j1);
+            io:println(j2);
             return j2.ensureType(string);
         }
         return error("Invalid permissions");
