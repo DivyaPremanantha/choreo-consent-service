@@ -22,6 +22,8 @@ service / on new http:Listener(9090) {
                 return consentResource.mergeJson(mapJson);
             }
         } else {
+            io:println(requestedPermissions);
+            io:println(consentExpiryStr);
             return error("Invalid Consent Resource");
         }
     }
