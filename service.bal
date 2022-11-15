@@ -23,6 +23,7 @@ service / on new http:Listener(9090) {
                 return consentResource.mergeJson(mapJson);
             }
         } else {
+            io:println("Error flow");
             io:println(requestedPermissions);
             io:println(consentExpiryStr);
             io:println(requestedPermissionsStrArr);
