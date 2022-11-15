@@ -14,15 +14,15 @@ service / on new http:Listener(9090) {
         json[]|error requestedPermissions = consentResource.Data.Permissions.ensureType();
         string|error consentExpiryStr = consentResource.Data.ExpirationDateTime.ensureType();
 
-        boolean|error validPermissionResponse = isValidPermissions(requestedPermissions);
+        boolean|error enforcedPermissionResponse = isPermissionEnforced(requestedPermissions);
         boolean|error consentExpiryResponse = isConsentExpired(consentExpiryStr);
 
         if !(consentExpiryResponse is error) {
-            if !(validPermissionResponse is error) {
+            if !(enforcedPermissionResponse is error) {
                 json mapJson = {"consentID": consentID};
                 return consentResource.mergeJson(mapJson);
             } else {
-                return validPermissionResponse;
+                return enforcedPermissionResponse;
             }
         } else {
             return consentExpiryResponse;
@@ -30,15 +30,16 @@ service / on new http:Listener(9090) {
     }
 }
 
-function isValidPermissions(json[]|error requestedPermissions) returns boolean|error {
+function isPermissionEnforced(json[]|error requestedPermissions) returns boolean|error {
+    string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
+
     if !((requestedPermissions is error)) {
         string[]|error requestedPermissionsStrArr = requestedPermissions.cloneWithType();
         if !((requestedPermissionsStrArr is error)) {
-            string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
-            if (validPermissions.sort() == requestedPermissionsStrArr.sort()) {
+            if (validPermissions.sort().slice(0, requestedPermissionsStrArr.length() - 1) == requestedPermissionsStrArr.sort()) {
                 return true;
             } else {
-                return error("Account permission validation failed");                
+                return error("Permission reuested are not supported");                
             }
         } else {
             return error("Invalid Permissions");
