@@ -20,22 +20,14 @@ service / on new http:Listener(9090) {
                 io:println("Consent validation successfull");
                 json mapJson = {"consentID": consentID};
                 return consentResource.mergeJson(mapJson);
-            } else {
-                return error("Consent validation failed");
             }
-        } else {
-            return error("Invalid consent resource");
         }
-    }
-
-    resource function post greeting(@http:Payload json consentResource) returns error? {
-            io:println("greeting Reached");
-            io:println(consentResource);
     }
 }
 
 function isValidPermissions(string[] requestedPermissions) returns boolean|error {
-    string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionBasic"];
+    string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
+    io:println(requestedPermissions.sort());
     if (validPermissions.sort() == requestedPermissions.sort()) {
         return true;
     } else {
@@ -45,6 +37,7 @@ function isValidPermissions(string[] requestedPermissions) returns boolean|error
 
 function isConsentExpired(string consentExpiryStr) returns boolean|error {
     time:Utc consentExpiry = check time:utcFromString(consentExpiryStr);
+    io:println(consentExpiry);
     if (consentExpiry > time:utcNow()) {
         return true;
     } else {
