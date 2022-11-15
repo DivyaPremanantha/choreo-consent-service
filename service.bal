@@ -21,6 +21,8 @@ service / on new http:Listener(9090) {
                 json mapJson = {"consentID": consentID};
                 return consentResource.mergeJson(mapJson);
             }
+        } else {
+            return error("Invalid Consent Resource");
         }
     }
 }
