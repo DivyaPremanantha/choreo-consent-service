@@ -24,7 +24,7 @@ service / on new http:Listener(9090) {
             }
         } else {
             io:println("Error flow");
-            io:println(requestedPermissions);
+            io:println(consentResource.Data.Permissions.ensureType());
             io:println(consentExpiryStr);
             io:println(requestedPermissionsStrArr);
             return error("Invalid Consent Resource");
