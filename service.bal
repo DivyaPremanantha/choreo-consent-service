@@ -31,21 +31,14 @@ service / on new http:Listener(9090) {
 }
 
 function isPermissionEnforced(json[]|error requestedPermissions) returns boolean|error {
-    string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
 
     if !((requestedPermissions is error)) {
         string[]|error requestedPermissionsStrArr = requestedPermissions.cloneWithType();
         if !((requestedPermissionsStrArr is error)) {
-            if (requestedPermissionsStrArr.length() <= validPermissions.length()) {
-                io:println("validPermissions.sort().slice(0, requestedPermissionsStrArr.length()) ");
-                io:println(validPermissions.sort().slice(0, requestedPermissionsStrArr.length())); 
-                if (validPermissions.sort().slice(0, requestedPermissionsStrArr.length()) == requestedPermissionsStrArr.sort()) {
-                    return true;
-                } else {
-                    return error("Invalid permissions requested");                
-                }
+            if (requestedPermissionsStrArr.every(validateAllowedPermissions)) {
+                return true;
             } else {
-                    return error("Permission reuested are not supported");                
+                return error("Invalid permissions requested");                
             }
         } else {
             return error("Consent resource contains invalid permission format");
@@ -53,6 +46,20 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
     } else {
         return error("Invalid Consent Resource");
     }
+}
+
+function validateAllowedPermissions(string requestedPermission) returns boolean {
+    string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
+    foreach var validPermission in validPermissions {
+        io:print("validPermission");
+        io:print(validPermission);
+        io:print("requestedPermission");
+        io:print(requestedPermission);
+        if (requestedPermission == validPermission) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
