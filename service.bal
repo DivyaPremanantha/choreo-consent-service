@@ -24,6 +24,8 @@ service / on new http:Listener(9090) {
             }
         } else {
             io:println("Error flow");
+            io:println(consentResource);
+            io:println(consentResource.Data);
             io:println(consentResource.Data.Permissions.ensureType());
             io:println(consentExpiryStr);
             io:println(requestedPermissionsStrArr);
