@@ -4,11 +4,11 @@ import ballerina/io;
 
 # A service representing a network-accessible API
 # bound to port `9090`.
+json|error consentResponse = {};
 service / on new http:Listener(9090) {
-
     # A resource for generating consent
     # + return - consent response
-    resource function post createAccountConsent(@http:Payload json consentResource) returns json|error {
+    resource function post accountConsent(@http:Payload json consentResource) returns json|error {
         io:println("Service Reached");
         string consentID = "343eea20-3f9d-4c12-8777-fe446c554210";
         json[]|error requestedPermissions = consentResource.Data.Permissions.ensureType();
@@ -20,7 +20,8 @@ service / on new http:Listener(9090) {
         if !(consentExpiryResponse is error) {
             if !(enforcedPermissionResponse is error) {
                 json mapJson = {"Data": {"ConsentId": consentID, "Status": "AwaitingAuthorisation", "StatusUpdateDateTime": time:utcToString(time:utcNow()), "CreationDateTime": time:utcToString(time:utcNow())}};
-                return consentResource.mergeJson(mapJson);
+                consentResponse = consentResource.mergeJson(mapJson);
+                return consentResponse;
             } else {
                 return enforcedPermissionResponse;
             }
@@ -28,6 +29,10 @@ service / on new http:Listener(9090) {
             return consentExpiryResponse;
         }
     }
+
+     resource function get accountConsent() returns json|error {
+         return consentResponse;
+     }
 }
 
 function isPermissionEnforced(json[]|error requestedPermissions) returns boolean|error {
@@ -38,7 +43,7 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
             if (requestedPermissionsStrArr.every(validateAllowedPermissions)) {
                 return true;
             } else {
-                return error("Invalid permissions requested");                
+                return error("Invalid permissions requested");
             }
         } else {
             return error("Consent resource contains invalid permission format");
