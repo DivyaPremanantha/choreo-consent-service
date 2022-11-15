@@ -14,38 +14,51 @@ service / on new http:Listener(9090) {
         json[]|error requestedPermissions = consentResource.Data.Permissions.ensureType();
         string|error consentExpiryStr = consentResource.Data.ExpirationDateTime.ensureType();
 
-        if !((consentExpiryStr is error) || (requestedPermissions is error)) {
-            string[]|error requestedPermissionsStrArr = requestedPermissions.cloneWithType();
-            io:println("Permission validation successfull");
-            if !((requestedPermissionsStrArr is error) || (isConsentExpired(consentExpiryStr) is error) || (isValidPermissions(requestedPermissionsStrArr) is error)) {
-                io:println("Consent validation successfull");
+        boolean|error validPermissionResponse = isValidPermissions(requestedPermissions);
+        boolean|error consentExpiryResponse = isConsentExpired(consentExpiryStr);
+
+        if !(consentExpiryResponse is error) {
+            if !(validPermissionResponse is error) {
                 json mapJson = {"consentID": consentID};
                 return consentResource.mergeJson(mapJson);
-
-
+            } else {
+                return validPermissionResponse;
             }
         } else {
-            return error("Invalid Consent Resource");
+            return consentExpiryResponse;
         }
     }
 }
 
-function isValidPermissions(string[] requestedPermissions) returns boolean|error {
-    string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
-    io:println(requestedPermissions.sort());
-    if (validPermissions.sort() == requestedPermissions.sort()) {
-        return true;
+function isValidPermissions(json[]|error requestedPermissions) returns boolean|error {
+    if !((requestedPermissions is error)) {
+        string[]|error requestedPermissionsStrArr = requestedPermissions.cloneWithType();
+        if !((requestedPermissionsStrArr is error)) {
+            string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
+            if (validPermissions.sort() == requestedPermissionsStrArr.sort()) {
+                return true;
+            } else {
+                return error("Account permission validation failed");                
+            }
+        } else {
+            return error("Invalid Permissions");
+        }
     } else {
-        return error("Invalid permissions");
+        return error("Invalid Consent Resource");
     }
 }
 
-function isConsentExpired(string consentExpiryStr) returns boolean|error {
-    time:Utc consentExpiry = check time:utcFromString(consentExpiryStr);
-    io:println(consentExpiry);
-    if (consentExpiry > time:utcNow()) {
-        return true;
+function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
+    if !((consentExpiryStr is error)) {
+        time:Utc consentExpiry = check time:utcFromString(consentExpiryStr);
+        io:println(consentExpiry);
+        if (consentExpiry > time:utcNow()) {
+            return true;
+        } else {
+            io:println("Consent expired");
+            return error("Consent expired");
+        }
     } else {
-        return error("Consent expired");
+        return error("Invalid Consent Expiry Date Time in Consent Resource");
     }
 }
