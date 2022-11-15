@@ -14,8 +14,8 @@ service / on new http:Listener(9090) {
         json[]|error requestedPermissions = consentResource.Data.Permissions.ensureType();
         string|error consentExpiryStr = consentResource.Data.ExpirationDateTime.ensureType();
 
-        boolean|error enforcedPermissionResponse = isPermissionEnforced(requestedPermissions);
         boolean|error consentExpiryResponse = isConsentExpired(consentExpiryStr);
+        boolean|error enforcedPermissionResponse = isPermissionEnforced(requestedPermissions);
 
         if !(consentExpiryResponse is error) {
             if !(enforcedPermissionResponse is error) {
@@ -36,13 +36,17 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
     if !((requestedPermissions is error)) {
         string[]|error requestedPermissionsStrArr = requestedPermissions.cloneWithType();
         if !((requestedPermissionsStrArr is error)) {
-            if (validPermissions.sort().slice(0, requestedPermissionsStrArr.length() - 1) == requestedPermissionsStrArr.sort()) {
-                return true;
+            if (requestedPermissionsStrArr.length() > validPermissions.length()) {
+                if (validPermissions.sort().slice(0, requestedPermissionsStrArr.length() - 1) == requestedPermissionsStrArr.sort()) {
+                    return true;
+                } else {
+                    return error("Invalid permissions requested");                
+                }
             } else {
-                return error("Permission reuested are not supported");                
+                    return error("Permission reuested are not supported");                
             }
         } else {
-            return error("Invalid Permissions");
+            return error("Consent resource contains invalid permission format");
         }
     } else {
         return error("Invalid Consent Resource");
