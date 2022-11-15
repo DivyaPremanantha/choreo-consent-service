@@ -19,7 +19,7 @@ service / on new http:Listener(9090) {
 
         if !(consentExpiryResponse is error) {
             if !(enforcedPermissionResponse is error) {
-                json mapJson = {"Data": {"consentID": consentID, "Status": "AwaitingAuthorisation", "StatusUpdateDateTime": time:utcToString(time:utcNow()), "CreationDateTime": time:utcToString(time:utcNow())}};
+                json mapJson = {"Data": {"ConsentId": consentID, "Status": "AwaitingAuthorisation", "StatusUpdateDateTime": time:utcToString(time:utcNow()), "CreationDateTime": time:utcToString(time:utcNow())}};
                 return consentResource.mergeJson(mapJson);
             } else {
                 return enforcedPermissionResponse;
