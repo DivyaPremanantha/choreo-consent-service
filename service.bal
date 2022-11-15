@@ -21,11 +21,15 @@ service / on new http:Listener(9090) {
                 io:println("Consent validation successfull");
                 json mapJson = {"consentID": consentID};
                 return consentResource.mergeJson(mapJson);
+
+
             }
         } else {
             io:println("Error flow");
             io:println(consentResource);
             io:println(consentResource.Data);
+            io:println("requestedPermissions");
+            io:println(requestedPermissions);
             io:println(consentResource.Data.Permissions.ensureType());
             io:println(consentExpiryStr);
             io:println(requestedPermissionsStrArr);
