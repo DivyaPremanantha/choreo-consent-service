@@ -37,9 +37,9 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
         string[]|error requestedPermissionsStrArr = requestedPermissions.cloneWithType();
         if !((requestedPermissionsStrArr is error)) {
             if (requestedPermissionsStrArr.length() <= validPermissions.length()) {
-                io:println("validPermissions.sort().slice(0, requestedPermissionsStrArr.length() - 1) ");
-                io:println(validPermissions.sort().slice(0, requestedPermissionsStrArr.length() - 1)); 
-                if (validPermissions.sort().slice(0, requestedPermissionsStrArr.length() - 1) == requestedPermissionsStrArr.sort()) {
+                io:println("validPermissions.sort().slice(0, requestedPermissionsStrArr.length()) ");
+                io:println(validPermissions.sort().slice(0, requestedPermissionsStrArr.length())); 
+                if (validPermissions.sort().slice(0, requestedPermissionsStrArr.length()) == requestedPermissionsStrArr.sort()) {
                     return true;
                 } else {
                     return error("Invalid permissions requested");                
