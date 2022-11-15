@@ -27,6 +27,11 @@ service / on new http:Listener(9090) {
             return error("Invalid consent resource");
         }
     }
+
+    resource function post greeting(@http:Payload json consentResource) returns error? {
+            io:println("greeting Reached");
+            io:println(consentResource);
+    }
 }
 
 function isValidPermissions(string[] requestedPermissions) returns boolean|error {
