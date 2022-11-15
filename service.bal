@@ -11,12 +11,13 @@ service / on new http:Listener(9090) {
     resource function post createAccountConsent(@http:Payload json consentResource) returns json|error {
         io:println("Service Reached");
         string consentID = "343eea20-3f9d-4c12-8777-fe446c554210";
-        string[]|error requestedPermissions = consentResource.Data.Permissions.ensureType();
+        json[]|error requestedPermissions = consentResource.Data.Permissions.ensureType();
+        string[]|error requestedPermissionsStrArr = requestedPermissions.ensureType();
         string|error consentExpiryStr = consentResource.Data.ExpirationDateTime.ensureType();
 
-        if !((requestedPermissions is error) || (consentExpiryStr is error)) {
+        if !((consentExpiryStr is error) || (requestedPermissions is error) || (requestedPermissionsStrArr is error)) {
             io:println("Permission validation successfull");
-            if !((isConsentExpired(consentExpiryStr) is error) || (isValidPermissions(requestedPermissions) is error)) {
+            if !((isConsentExpired(consentExpiryStr) is error) || (isValidPermissions(requestedPermissionsStrArr) is error)) {
                 io:println("Consent validation successfull");
                 json mapJson = {"consentID": consentID};
                 return consentResource.mergeJson(mapJson);
@@ -24,6 +25,7 @@ service / on new http:Listener(9090) {
         } else {
             io:println(requestedPermissions);
             io:println(consentExpiryStr);
+            io:println(requestedPermissionsStrArr);
             return error("Invalid Consent Resource");
         }
     }
