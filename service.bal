@@ -24,6 +24,7 @@ service / on new http:Listener(9090) {
         }
     }
 }
+
 function isValidPermissions(string[] requestedPermissions) returns boolean|error {
     string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionBasic"];
     if (validPermissions.sort() == requestedPermissions.sort()) {
