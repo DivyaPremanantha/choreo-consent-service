@@ -19,8 +19,10 @@ service / on new http:Listener(9090) {
 
         if !(consentExpiryResponse is error) {
             if !(enforcedPermissionResponse is error) {
+                io:println("Constructing Account Consent Response");
                 json mapJson = {"Data": {"ConsentId": consentID, "Status": "AwaitingAuthorisation", "StatusUpdateDateTime": time:utcToString(time:utcNow()), "CreationDateTime": time:utcToString(time:utcNow())}};
                 consentResponse = consentResource.mergeJson(mapJson);
+                io:println("Account Consent Response Constructed");
                 return consentResponse;
             } else {
                 return enforcedPermissionResponse;
@@ -36,19 +38,23 @@ service / on new http:Listener(9090) {
 }
 
 function isPermissionEnforced(json[]|error requestedPermissions) returns boolean|error {
-
+    io:println("Account Consent Permission Validation Initiated");
     if !((requestedPermissions is error)) {
         string[]|error requestedPermissionsStrArr = requestedPermissions.cloneWithType();
         if !((requestedPermissionsStrArr is error)) {
             if (requestedPermissionsStrArr.every(validateAllowedPermissions)) {
+                io:println("Account Consent Permission Validation Successfull");
                 return true;
             } else {
+                io:println("Account Consent Permission Validation Failed, Permissions not supported");
                 return error("{'error': 'Permission Validation Failed', 'error_description': 'Permission requested are not supported'}");
             }
         } else {
+            io:println("Account Consent Permission Validation Failed, Invalid Permission Format");
             return error("{'error': 'Invalid Permission Format', 'error_description': 'Permissions passed in the consent resource is not a valid json'}");
         }
     } else {
+        io:println("Account Consent Permission Validation Failed, Invalid Consent Resource");
         return error("{'error': 'Invalid Consent Resource', 'error_description': 'Consent resource passed is not a valid json'}");
     }
 }
@@ -64,16 +70,19 @@ function validateAllowedPermissions(string requestedPermission) returns boolean 
 }
 
 function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
+    io:println("Account Consent Expiry Validation Initiated");
     if !((consentExpiryStr is error)) {
         time:Utc consentExpiry = check time:utcFromString(consentExpiryStr);
         io:println(consentExpiry);
         if (consentExpiry > time:utcNow()) {
+            io:println("Account Consent Expiry Validation Successfull");
             return true;
         } else {
-            io:println("Consent expired");
+            io:println("Account Consent Expiry Validation Failed, Consent expired");
             return error("{'error': 'Consent expired', 'error_description': 'ExpirationDateTime specified in the consent resource has been expired'}");
         }
     } else {
-        return error("{'error': 'Invalid Consent Expiry', 'error_description': 'Invalid Consent Expiry Date Time specified in the Consent Resource'}");
+        io:println("Account Consent Expiry Validation Failed, Invalid Consent Expiry Date Time");
+        return error("{'error': 'Invalid Consent Expiry Date Time', 'error_description': 'Invalid Consent Expiry Date Time specified in the Consent Resource'}");
     }
 }
