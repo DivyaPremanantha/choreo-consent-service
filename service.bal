@@ -6,8 +6,10 @@ import ballerina/io;
 # bound to port `9090`.
 json|error consentResponse = {};
 service / on new http:Listener(9090) {
-    # A resource for generating consent
-    # + return - consent response
+    # A resource to generate consent.
+    # 
+    # + consentResource - The consent resource.
+    # + return - Consent response.
     resource function post accountConsent(@http:Payload json consentResource) returns json|error {
         io:println("Account Consent Create Service Initiated");
         string consentID = "343eea20-3f9d-4c12-8777-fe446c554210";
@@ -32,11 +34,18 @@ service / on new http:Listener(9090) {
         }
     }
 
+    # A resource to return consent.
+    # 
+    # + return - Consent response.
      resource function get accountConsent() returns json|error {
          return consentResponse;
      }
 }
 
+# A function to enforce permissions.
+# 
+# + requestedPermissions - The requested permission in the consent resource.
+# + return - Permission enforcement response.
 function isPermissionEnforced(json[]|error requestedPermissions) returns boolean|error {
     io:println("Account Consent Permission Validation Initiated");
     if !((requestedPermissions is error)) {
@@ -59,6 +68,10 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
     }
 }
 
+# A function to validate permissions.
+# 
+# + requestedPermissions - The requested permission in the consent resource.
+# + return - Permission validation response.
 function validateAllowedPermissions(string requestedPermission) returns boolean {
     string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
     foreach var validPermission in validPermissions {
@@ -69,6 +82,10 @@ function validateAllowedPermissions(string requestedPermission) returns boolean 
     return false;
 }
 
+# A function to validate consent.
+# 
+# + consentExpiryStr - The string value of the consent expiration date time.
+# + return - Consent validation response.
 function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
     io:println("Account Consent Expiry Validation Initiated");
     if !((consentExpiryStr is error)) {
