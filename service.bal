@@ -9,7 +9,7 @@ service / on new http:Listener(9090) {
     # A resource for generating consent
     # + return - consent response
     resource function post accountConsent(@http:Payload json consentResource) returns json|error {
-        io:println("Service Reached");
+        io:println("Account Consent Create Service Initiated");
         string consentID = "343eea20-3f9d-4c12-8777-fe446c554210";
         json[]|error requestedPermissions = consentResource.Data.Permissions.ensureType();
         string|error consentExpiryStr = consentResource.Data.ExpirationDateTime.ensureType();
@@ -56,10 +56,6 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
 function validateAllowedPermissions(string requestedPermission) returns boolean {
     string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
     foreach var validPermission in validPermissions {
-        io:print("validPermission");
-        io:print(validPermission);
-        io:print("requestedPermission");
-        io:print(requestedPermission);
         if (requestedPermission == validPermission) {
             return true;
         }
@@ -75,7 +71,7 @@ function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
             return true;
         } else {
             io:println("Consent expired");
-            return error("Consent expired");
+            return error("{'error': 'Consent expired', error_description': 'ExpirationDateTime specified in the consent resource has been expired'}");
         }
     } else {
         return error("Invalid Consent Expiry Date Time in Consent Resource");
