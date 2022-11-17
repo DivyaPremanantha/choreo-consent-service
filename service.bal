@@ -70,7 +70,7 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
 
 # A function to validate permissions.
 # 
-# + requestedPermissions - The requested permission in the consent resource.
+# + requestedPermission - The requested permission in the consent resource.
 # + return - Permission validation response.
 function validateAllowedPermissions(string requestedPermission) returns boolean {
     string[] validPermissions = ["ReadAccountsBasic", "ReadTransactionsBasic"];
