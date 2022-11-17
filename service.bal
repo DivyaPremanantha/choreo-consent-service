@@ -15,9 +15,9 @@ service / on new http:Listener(9090) {
         string|error consentExpiryStr = consentResource.Data.ExpirationDateTime.ensureType();
 
         boolean|error consentExpiryResponse = isConsentExpired(consentExpiryStr);
-        boolean|error enforcedPermissionResponse = isPermissionEnforced(requestedPermissions);
 
         if !(consentExpiryResponse is error) {
+            boolean|error enforcedPermissionResponse = isPermissionEnforced(requestedPermissions);
             if !(enforcedPermissionResponse is error) {
                 io:println("Constructing Account Consent Response");
                 json mapJson = {"Data": {"ConsentId": consentID, "Status": "AwaitingAuthorisation", "StatusUpdateDateTime": time:utcToString(time:utcNow()), "CreationDateTime": time:utcToString(time:utcNow())}};
