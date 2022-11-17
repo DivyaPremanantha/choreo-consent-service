@@ -43,13 +43,13 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
             if (requestedPermissionsStrArr.every(validateAllowedPermissions)) {
                 return true;
             } else {
-                return error("Invalid permissions requested");
+                return error("{'error': 'Permission Validation Failed', 'error_description': 'Permission requested are not supported'}");
             }
         } else {
-            return error("Consent resource contains invalid permission format");
+            return error("{'error': 'Invalid Permission Format', 'error_description': 'Permissions passed in the consent resource is not a valid json'}");
         }
     } else {
-        return error("Invalid Consent Resource");
+        return error("{'error': 'Invalid Consent Resource', 'error_description': 'Consent resource passed is not a valid json'}");
     }
 }
 
@@ -71,9 +71,9 @@ function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
             return true;
         } else {
             io:println("Consent expired");
-            return error("{'error': 'Consent expired', error_description': 'ExpirationDateTime specified in the consent resource has been expired'}");
+            return error("{'error': 'Consent expired', 'error_description': 'ExpirationDateTime specified in the consent resource has been expired'}");
         }
     } else {
-        return error("Invalid Consent Expiry Date Time in Consent Resource");
+        return error("{'error': 'Invalid Consent Expiry', 'error_description': 'Invalid Consent Expiry Date Time specified in the Consent Resource'}");
     }
 }
