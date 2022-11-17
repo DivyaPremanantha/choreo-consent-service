@@ -73,7 +73,6 @@ function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
     io:println("Account Consent Expiry Validation Initiated");
     if !((consentExpiryStr is error)) {
         time:Utc consentExpiry = check time:utcFromString(consentExpiryStr);
-        io:println(consentExpiry);
         if (consentExpiry > time:utcNow()) {
             io:println("Account Consent Expiry Validation Successfull");
             return true;
