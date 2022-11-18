@@ -56,15 +56,15 @@ function isPermissionEnforced(json[]|error requestedPermissions) returns boolean
                 return true;
             } else {
                 io:println("Account Consent Permission Validation Failed, Permissions not supported");
-                return error("{'error': 'Permission Validation Failed', 'error_description': 'Permission requested are not supported'}");
+                return error("{'error_message': 'Permission Validation Failed', 'error_description': 'Permission requested are not supported'}");
             }
         } else {
             io:println("Account Consent Permission Validation Failed, Invalid Permission Format");
-            return error("{'error': 'Invalid Permission Format', 'error_description': 'Permissions passed in the consent resource is not a valid json'}");
+            return error("{'error_message': 'Invalid Permission Format', 'error_description': 'Permissions passed in the consent resource is not a valid json'}");
         }
     } else {
         io:println("Account Consent Permission Validation Failed, Invalid Consent Resource");
-        return error("{'error': 'Invalid Consent Resource', 'error_description': 'Consent resource passed is not a valid json'}");
+        return error("{'error_message': 'Invalid Consent Resource', 'error_description': 'Consent resource passed is not a valid json'}");
     }
 }
 
@@ -95,10 +95,10 @@ function isConsentExpired(string|error consentExpiryStr) returns boolean|error {
             return true;
         } else {
             io:println("Account Consent Expiry Validation Failed, Consent expired");
-            return error("{'error': 'Consent expired', 'error_description': 'ExpirationDateTime specified in the consent resource has been expired'}");
+            return error("{'error_message': 'Consent expired', 'error_description': 'ExpirationDateTime specified in the consent resource has been expired'}");
         }
     } else {
         io:println("Account Consent Expiry Validation Failed, Invalid Consent Expiry Date Time");
-        return error("{'error': 'Invalid Consent Expiry Date Time', 'error_description': 'Invalid Consent Expiry Date Time specified in the Consent Resource'}");
+        return error("{'error_message': 'Invalid Consent Expiry Date Time', 'error_description': 'Invalid Consent Expiry Date Time specified in the Consent Resource'}");
     }
 }
